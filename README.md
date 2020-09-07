@@ -1,6 +1,6 @@
 # flutter_module
 
-A new flutter module project.
+Jetpack_Github模块对应的Flutter模块代码工程
 
 ## Getting Started
 
