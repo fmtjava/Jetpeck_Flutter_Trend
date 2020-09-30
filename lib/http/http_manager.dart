@@ -20,7 +20,21 @@ class HttpManager {
         success(response.data);
       }
     } catch (e) {
-      error(e);
+      error(e.toString());
+    }
+  }
+
+  static Future request(String url) async {
+    try {
+      Response response = await _dio.get(url);
+      if (response.statusCode != 200) {
+        throw Exception(
+            "statusCode=${response.statusCode},statusMessage=${response.statusMessage}");
+      } else {
+        return response.data;
+      }
+    } catch (e) {
+      throw Exception(e.toString());
     }
   }
 }

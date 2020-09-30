@@ -2,29 +2,27 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_module/bloc/trend_bloc.dart';
+import 'package:flutter_module/bloc/trend_event.dart';
+import 'package:flutter_module/bloc/trend_state.dart';
 import 'package:flutter_module/color/color.dart';
-import 'package:flutter_module/http/http_manager.dart';
-import 'package:flutter_module/model/trend_model.dart';
 import 'package:flutter_module/string/string.dart';
 import 'package:flutter_module/util/toast_util.dart';
 import 'package:flutter_module/widget/loading_dialog.dart';
 import 'package:flutter_module/widget/trend_page_item.dart';
 
-class TrendPage extends StatefulWidget {
+class TrendPage extends StatelessWidget {
   @override
-  _TrendPageState createState() => _TrendPageState();
+  Widget build(BuildContext context) {
+    return BlocProvider<TrendBloc>(
+      create: (c) => TrendBloc(LoadingState())..add(GetTrendEvent()),
+      child: TrendListPage(),
+    );
+  }
 }
 
-class _TrendPageState extends State<TrendPage> {
-  List<TrendModel> _trendList = [];
-  ScrollController _scrollController = ScrollController();
-
-  @override
-  void initState() {
-    super.initState();
-    _requestTrendData();
-  }
-
+class TrendListPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,7 +36,7 @@ class _TrendPageState extends State<TrendPage> {
             //弹出菜单
             PopupMenuButton(
                 onSelected: (action) {
-                  _requestTrendData(since: action);
+                  context.bloc<TrendBloc>().add(GetTrendEvent(since: action));
                 },
                 offset: Offset(0, 55),
                 itemBuilder: (context) => <PopupMenuItem<String>>[
@@ -51,46 +49,30 @@ class _TrendPageState extends State<TrendPage> {
                     ])
           ],
         ),
-        body: ListView.builder(
-          controller: _scrollController,
-          itemBuilder: (context, index) {
-            return TrendPageItem(_trendList[index]);
-          },
-          itemCount: _trendList.length,
-        ));
-  }
-
-  @override
-  void dispose() {
-    _scrollController.dispose();
-    super.dispose();
-  }
-
-  void _showLoadingDialog() {
-    //flutter在initState中显示Dialog加载框,加上Future.delayed
-    Future.delayed(Duration.zero, () {
-      showDialog(
-          context: context, barrierDismissible: false, child: LoadingDialog());
-    });
-  }
-
-  void _requestTrendData({String since = "daily"}) {
-    _showLoadingDialog();
-    var url = "https://guoshuyu.cn/github/trend/list?since=$since";
-    HttpManager.get(url, (data) {
-      Navigator.of(context).pop();
-      _trendList.clear();
-      List<dynamic> list = data;
-      list.forEach((element) {
-        _trendList.add(TrendModel.fromJsonMap(element));
-      });
-      setState(() {});
-      //滚动到顶部
-      _scrollController.animateTo(0.0,
-          duration: Duration(milliseconds: 500), curve: Curves.decelerate);
-    }, (error) {
-      Navigator.of(context).pop();
-      ToastUtil.showError(error);
-    });
+        body: BlocBuilder<TrendBloc, TrendState>(builder: (context, state) {
+          if (state is LoadingState) {
+            return LoadingDialog();
+          }
+          if (state is SuccessState) {
+            return ListView.builder(
+              itemBuilder: (context, index) {
+                return TrendPageItem(state.trendList[index]);
+              },
+              itemCount: state.trendList.length,
+            );
+          } else {
+            FailState failState = state;
+            ToastUtil.showError(failState.message);
+            return Center(
+              child: OutlineButton(
+                onPressed: () {
+                  context.bloc<TrendBloc>().add(
+                      GetTrendEvent(since: context.bloc<TrendBloc>().since));
+                },
+                child: Text("重新加载"),
+              ),
+            );
+          }
+        }));
   }
 }
