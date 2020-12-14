@@ -12,6 +12,7 @@ import 'package:flutter_module/util/toast_util.dart';
 import 'package:flutter_module/widget/loading_dialog.dart';
 import 'package:flutter_module/widget/trend_page_item.dart';
 
+//Bloc中文文档：https://bloclibrary.dev/#/zh-cn/architecture
 class TrendPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -31,7 +32,7 @@ class TrendListPage extends StatelessWidget {
               icon: Icon(Icons.arrow_back),
               onPressed: () => SystemNavigator.pop()),
           backgroundColor: DColor.themeColor,
-          title: Text('Trend'),
+          title: Text(DString.TREND),
           actions: <Widget>[
             //弹出菜单
             PopupMenuButton(
@@ -69,7 +70,7 @@ class TrendListPage extends StatelessWidget {
                   context.bloc<TrendBloc>().add(
                       GetTrendEvent(since: context.bloc<TrendBloc>().since));
                 },
-                child: Text("重新加载"),
+                child: Text(DString.LOAD_AGAINT),
               ),
             );
           }

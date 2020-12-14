@@ -37,17 +37,22 @@ class TrendPageItem extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
-                        Text(
+                        Expanded(
+                            child: Text(
                           trendModel.reposName,
+                          overflow: TextOverflow.ellipsis,
                           style: TextStyle(
                               color: DColor.themeColor,
                               fontSize: 16,
                               fontWeight: FontWeight.bold),
-                        ),
-                        Text(
-                          trendModel.language,
-                          style: TextStyle(
-                              color: DColor.desTextColor, fontSize: 12),
+                        )),
+                        Container(
+                          margin: EdgeInsets.only(left: 10),
+                          child: Text(
+                            trendModel.language,
+                            style: TextStyle(
+                                color: DColor.desTextColor, fontSize: 12),
+                          ),
                         )
                       ],
                     ),
