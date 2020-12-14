@@ -1,4 +1,4 @@
-# flutter_module
+# Jetpeck_Flutter_Trend
 
 Jetpack_Github项目对应的趋势模块Flutter代码工程，项目架构使用了Bloc，不熟悉Bloc的小伙伴，可参考Bloc中文官方网址：https://bloclibrary.dev/#/zh-cn/architecture
 
