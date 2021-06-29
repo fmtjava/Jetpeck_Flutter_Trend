@@ -37,9 +37,9 @@ class TrendListPage extends StatelessWidget {
             //弹出菜单
             PopupMenuButton(
                 onSelected: (action) {
-                  context.bloc<TrendBloc>().add(GetTrendEvent(since: action));
+                  context.read<TrendBloc>().add(GetTrendEvent(since: action));
                 },
-                offset: Offset(0, 55),
+                offset: Offset(0, 28),
                 itemBuilder: (context) => <PopupMenuItem<String>>[
                       PopupMenuItem(
                           child: Text(DString.DAILY), value: DString.DAILY),
@@ -65,10 +65,10 @@ class TrendListPage extends StatelessWidget {
             FailState failState = state;
             ToastUtil.showError(failState.message);
             return Center(
-              child: OutlineButton(
+              child: OutlinedButton(
                 onPressed: () {
-                  context.bloc<TrendBloc>().add(
-                      GetTrendEvent(since: context.bloc<TrendBloc>().since));
+                  context.read<TrendBloc>().add(
+                      GetTrendEvent(since: context.read<TrendBloc>().since));
                 },
                 child: Text(DString.LOAD_AGAINT),
               ),
